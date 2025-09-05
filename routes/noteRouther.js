@@ -2,7 +2,7 @@ const express = require('express');
 const noteRouther = express.Router();
 const Note = require('../models/Note');
 
-bookRouter.get('/:tag', async (req, res) => {
+noteRouther.get('/:tag', async (req, res) => {
   try {
     const tag = req.params.tag;
     const note = await Note.find({ tags: tag }).lean();
@@ -13,7 +13,7 @@ bookRouter.get('/:tag', async (req, res) => {
   }
 });
 
-bookRouter.post('/', async (req, res) => {
+noteRouther.post('/', async (req, res) => {
   try {
     const { title, content, tags } = req.body;
     const existingNote = await Note.findOne({ title });
@@ -31,7 +31,7 @@ bookRouter.post('/', async (req, res) => {
   }
 });
 
-bookRouter.delete('/:id', async (req, res) => {
+noteRouther.delete('/:id', async (req, res) => {
   try {
     await Note.findByIdAndDelete(req.params.id);
     res.status(201).json({ message: 'Note Deleted' });
@@ -40,7 +40,7 @@ bookRouter.delete('/:id', async (req, res) => {
   }
 });
 
-bookRouter.patch('/:id/archive', async (req, res) => {
+noteRouther.patch('/:id/archive', async (req, res) => {
   try {
     const id = req.params.id;
     const updateNote = await Note.findByIdAndUpdate(
@@ -57,7 +57,7 @@ bookRouter.patch('/:id/archive', async (req, res) => {
   }
 });
 
-bookRouter.patch('/:id/archive', async (req, res) => {
+noteRouther.patch('/:id/archive', async (req, res) => {
   try {
     const id = req.params.id;
     const { tags } = req.body;
@@ -75,7 +75,7 @@ bookRouter.patch('/:id/archive', async (req, res) => {
   }
 });
 
-bookRouter.get('/status/:status', async (req, res) => {
+noteRouther.get('/status/:status', async (req, res) => {
   const status = req.params.status;
   const activeOrArchive = await Note.find({ status: status }).lean();
 
