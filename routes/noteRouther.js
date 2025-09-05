@@ -43,12 +43,44 @@ bookRouter.delete('/:id', async (req, res) => {
 bookRouter.patch('/:id/archive', async (req, res) => {
   try {
     const id = req.params.id;
-    const update = req.body;
-    const updateNote = await Note.findByIdAndUpdate(id, update, { new: true });
+    const updateNote = await Note.findByIdAndUpdate(
+      id,
+      { status: 'archived' },
+      { new: true }
+    );
     if (!updateNote) {
       return res.status(404).json({ message: 'Note not found' });
     }
-    res.status(200).json(updatedNote);
+    res.status(200).json(updateNote);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+bookRouter.patch('/:id/archive', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { tags } = req.body;
+    const updateNoteTag = await Note.findByIdAndUpdate(
+      id,
+      { tags: tags },
+      { new: true }
+    );
+    if (!updateNoteTag) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+    res.status(200).json(updateNoteTag);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+bookRouter.get('/status/:status', async (req, res) => {
+  const status = req.params.status;
+  const activeOrArchive = await Note.find({ status: status });
+
+  res.status(200).json({ message: activeOrArchive });
+  try {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
