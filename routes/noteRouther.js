@@ -5,11 +5,11 @@ const Note = require('../models/Note');
 bookRouter.get('/:tag', async (req, res) => {
   try {
     const tag = req.params.tag;
-    const note = await Note.find({ tags: tag });
+    const note = await Note.find({ tags: tag }).lean();
 
     res.status(200).json({ message: note });
   } catch (error) {
-    res.status(404).json({ message: error });
+    res.status(404).json({ message: error.message });
   }
 });
 
@@ -27,7 +27,7 @@ bookRouter.post('/', async (req, res) => {
     });
     res.status(201).json({ message: createNote });
   } catch (error) {
-    res.status(409).json({ message: error });
+    res.status(409).json({ message: error.message });
   }
 });
 
@@ -36,7 +36,7 @@ bookRouter.delete('/:id', async (req, res) => {
     await Note.findByIdAndDelete(req.params.id);
     res.status(201).json({ message: 'Note Deleted' });
   } catch (error) {
-    res.status(404).json({ message: error });
+    res.status(404).json({ message: error.message });
   }
 });
 
@@ -77,7 +77,7 @@ bookRouter.patch('/:id/archive', async (req, res) => {
 
 bookRouter.get('/status/:status', async (req, res) => {
   const status = req.params.status;
-  const activeOrArchive = await Note.find({ status: status });
+  const activeOrArchive = await Note.find({ status: status }).lean();
 
   res.status(200).json({ message: activeOrArchive });
   try {
