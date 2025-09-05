@@ -1,0 +1,57 @@
+const express = require('express');
+const bookRouter = express.Router();
+const Note = require('../models/Note');
+
+bookRouter.get('/:tag', async (req, res) => {
+  try {
+    const tag = req.params.tag;
+    const note = await Note.find({ tags: tag });
+
+    res.status(200).json({ message: note });
+  } catch (error) {
+    res.status(404).json({ message: error });
+  }
+});
+
+bookRouter.post('/', async (req, res) => {
+  try {
+    const { title, content, tags } = req.body;
+    const existingNote = await Note.findOne({ title });
+    if (existingNote) {
+      return res.status(409).json({ message: 'this note already existed' });
+    }
+    const createNote = await Note.create({
+      title,
+      content,
+      tags,
+    });
+    res.status(201).json({ message: createNote });
+  } catch (error) {
+    res.status(409).json({ message: error });
+  }
+});
+
+bookRouter.delete('/:id', async (req, res) => {
+  try {
+    await Note.findByIdAndDelete(req.params.id);
+    res.status(201).json({ message: 'Note Deleted' });
+  } catch (error) {
+    res.status(404).json({ message: error });
+  }
+});
+
+bookRouter.patch('/:id/archive', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const update = req.body;
+    const updateNote = await Note.findByIdAndUpdate(id, update, { new: true });
+    if (!updateNote) {
+      return res.status(404).json({ message: 'Note not found' });
+    }
+    res.status(200).json(updatedNote);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+module.exports = bookRouter;
