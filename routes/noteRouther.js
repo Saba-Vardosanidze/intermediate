@@ -1,5 +1,5 @@
 const express = require('express');
-const bookRouter = express.Router();
+const noteRouther = express.Router();
 const Note = require('../models/Note');
 
 bookRouter.get('/:tag', async (req, res) => {
@@ -86,4 +86,4 @@ bookRouter.get('/status/:status', async (req, res) => {
   }
 });
 
-module.exports = bookRouter;
+module.exports = noteRouther;
