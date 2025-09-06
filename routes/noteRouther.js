@@ -1,6 +1,7 @@
 const express = require('express');
 const noteRouther = express.Router();
 const Note = require('../models/Note');
+const { default: mongoose } = require('mongoose');
 
 noteRouther.get('/:tag', async (req, res) => {
   try {
@@ -33,16 +34,25 @@ noteRouther.post('/', async (req, res) => {
 
 noteRouther.delete('/:id', async (req, res) => {
   try {
-    await Note.findByIdAndDelete(req.params.id);
-    res.status(201).json({ message: 'Note Deleted' });
+    const { id } = req.params;
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ error: 'Invalid note id' });
+    }
+
+    const note = await Note.findByIdAndDelete(req.params.id);
+    if (!note) return res.status(404).json({ error: 'note not found' });
+    res.status(200).json({ message: 'Note deleted' });
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
 noteRouther.patch('/:id/archive', async (req, res) => {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ error: 'Invalid Id' });
+    }
     const updateNote = await Note.findByIdAndUpdate(
       id,
       { status: 'archived' },
@@ -59,8 +69,11 @@ noteRouther.patch('/:id/archive', async (req, res) => {
 
 noteRouther.patch('/:id/archive', async (req, res) => {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
     const { tags } = req.body;
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ error: 'Invalid Id' });
+    }
     const updateNoteTag = await Note.findByIdAndUpdate(
       id,
       { tags: tags },
