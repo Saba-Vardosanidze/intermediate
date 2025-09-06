@@ -1,7 +1,7 @@
 const express = require('express');
 const noteRouther = express.Router();
 const Note = require('../models/Note');
-const { default: mongoose } = require('mongoose');
+const mongoose = require('mongoose');
 
 noteRouther.get('/:tag', async (req, res) => {
   try {
